@@ -1,6 +1,6 @@
 /* Service worker — offline-first com cache versionado.
    Os dados do usuário ficam no IndexedDB e NUNCA são tocados aqui. */
-const VERSION = '3.0.0';
+const VERSION = '3.2.0';
 const APP_CACHE = 'tlm-app-' + VERSION;   // muda a cada versão
 const IMG_CACHE = 'tlm-img-v1';           // fotos: mantidas entre versões
 const IMG_MAX = 150;

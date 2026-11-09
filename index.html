@@ -266,13 +266,24 @@ const EXERCISES = {
   abdutora:    { name: 'Cadeira abdutora',            group: 'Glúteos',    photo: 'Thigh_Abductor' },
   panturrilha: { name: 'Panturrilha sentada',         group: 'Panturrilha',photo: 'Seated_Calf_Raise' },
   legpress:    { name: 'Leg press',                   group: 'Quadríceps', photo: 'Leg_Press' },
-  /* Alternativas para "trocar exercício" (fotos com fallback se não existirem) */
   remadaBaixa: { name: 'Remada baixa na polia',       group: 'Costas',     photo: 'Seated_Cable_Rows' },
   desenvolv:   { name: 'Desenvolvimento com halteres',group: 'Ombros',     photo: 'Dumbbell_Shoulder_Press' },
   roscaMartelo:{ name: 'Rosca martelo',               group: 'Bíceps',     photo: 'Hammer_Curls' },
   flexoraDeit: { name: 'Mesa flexora',                group: 'Posterior',  photo: 'Lying_Leg_Curls' },
   pantEmPe:    { name: 'Panturrilha em pé',           group: 'Panturrilha',photo: 'Standing_Calf_Raises' },
-  agachTaca:   { name: 'Agachamento taça',            group: 'Quadríceps', photo: 'Goblet_Squat' }
+  agachTaca:   { name: 'Agachamento taça',            group: 'Quadríceps', photo: 'Goblet_Squat' },
+  /* Adicionados na revisão dos treinos (v3.1) */
+  puxadaFech:  { name: 'Puxada com pegada fechada',   group: 'Costas',     photo: 'Close-Grip_Front_Lat_Pulldown' },
+  facePull:    { name: 'Face pull na polia',          group: 'Ombros',     photo: 'Face_Pull' },
+  roscaAlt:    { name: 'Rosca alternada com halteres',group: 'Bíceps',     photo: 'Dumbbell_Alternate_Bicep_Curl' },
+  triFrances:  { name: 'Tríceps francês na polia',    group: 'Tríceps',    photo: 'Cable_Rope_Overhead_Triceps_Extension' },
+  stiff:       { name: 'Stiff com halteres',          group: 'Posterior',  photo: 'Stiff-Legged_Dumbbell_Deadlift' },
+  hipThrust:   { name: 'Elevação pélvica',            group: 'Glúteos',    photo: 'Barbell_Hip_Thrust' },
+  afundo:      { name: 'Afundo com halteres',         group: 'Quadríceps', photo: 'Dumbbell_Lunges' },
+  /* Adicionados na v3.2 (inferiores só em máquina) */
+  hack:        { name: 'Agachamento no hack',         group: 'Quadríceps', photo: 'Hack_Squat' },
+  adutora:     { name: 'Cadeira adutora',             group: 'Adutores',   photo: 'Thigh_Adductor' },
+  pantMaq:     { name: 'Panturrilha em pé na máquina',group: 'Panturrilha',photo: 'Standing_Calf_Raises' }
 };
 
 /* Montagem de dia: [id, séries, repMin, repMax] */
@@ -280,16 +291,39 @@ const D = (title, list) => ({ type: 'treino', title, exercises: list.map(([id, s
 const REC = { type: 'recuperacao', title: 'Recuperação ativa', text: 'Caminhada confortável de 15–25 minutos, se tolerada. Sem musculação.' };
 const REST = { type: 'descanso', title: 'Descanso', text: 'Sábado e domingo: descanso.' };
 
-const SUP_A = [['puxada',3,10,12],['remada',3,10,12],['supino',3,10,12],['elevacao',2,12,15],['rosca',2,10,15]];
-const SUP_B = [['supino',3,10,12],['puxada',3,10,12],['remada',3,10,12],['elevacao',2,12,15],['triceps',2,10,15]];
-const INF_LUA = [['extensora',3,10,15],['flexora',3,10,15],['abdutora',2,12,15],['panturrilha',3,12,15]];
-const INF_MAY = [['legpress',3,10,12],...INF_LUA];
+/* ---- Plano original (v1) — usado só para migrar quem já tinha o app ---- */
+const _SUP_A1 = [['puxada',3,10,12],['remada',3,10,12],['supino',3,10,12],['elevacao',2,12,15],['rosca',2,10,15]];
+const _SUP_B1 = [['supino',3,10,12],['puxada',3,10,12],['remada',3,10,12],['elevacao',2,12,15],['triceps',2,10,15]];
+const _INF_L1 = [['extensora',3,10,15],['flexora',3,10,15],['abdutora',2,12,15],['panturrilha',3,12,15]];
+const _INF_M1 = [['legpress',3,10,12],..._INF_L1];
+const OLD_PLANS_V1 = {
+  lua: { 1: D('Superiores A', _SUP_A1), 2: D('Inferiores A', _INF_L1), 4: D('Superiores B', _SUP_B1), 5: D('Inferiores B', _INF_L1) },
+  may: { 1: D('Superiores A', _SUP_A1), 2: D('Inferiores A', _INF_M1), 4: D('Superiores B', _SUP_B1), 5: D('Inferiores B', _INF_M1) }
+};
+
+/* ---- Plano atual (v3.1) ----
+   Luã (V-shape): costas largas + ombro lateral/posterior + braço 2×/semana (6 séries diretas de bíceps e 6 de tríceps).
+   May (composição corporal): inferiores A (quadríceps) ≠ inferiores B (glúteo/posterior); superiores A ≠ B. */
+const LUA_SUP_A = [['puxada',3,8,12],['remada',3,10,12],['supino',3,8,12],['elevacao',3,12,15],['rosca',3,10,12],['triceps',3,10,12]];
+const LUA_SUP_B = [['puxadaFech',3,8,12],['remadaBaixa',3,10,12],['desenvolv',3,8,12],['elevacao',3,12,15],['facePull',2,12,15],['roscaMartelo',3,10,12],['triFrances',3,10,12]];
+/* Luã — inferiores só em máquina (sem peso livre) */
+const LUA_INF_A = [['legpress',3,10,12],['extensora',3,10,15],['flexora',3,10,15],['abdutora',2,12,15],['panturrilha',3,12,15]];
+const LUA_INF_B = [['hack',3,10,12],['flexoraDeit',3,10,15],['extensora',2,12,15],['adutora',2,12,15],['pantMaq',3,12,15]];
+/* Versão anterior (v3.1) — só para migração */
+const _LUA_INF_A31 = [['agachTaca',3,10,12],['extensora',3,10,15],['flexora',3,10,15],['panturrilha',3,12,15]];
+const _LUA_INF_B31 = [['stiff',3,10,12],['afundo',2,10,12],['flexoraDeit',3,10,15],['abdutora',2,12,15],['pantEmPe',3,12,15]];
+const MAY_SUP_A = [['puxada',3,10,12],['remada',3,10,12],['supino',3,10,12],['elevacao',2,12,15],['rosca',2,10,15]];
+const MAY_SUP_B = [['desenvolv',3,10,12],['puxadaFech',3,10,12],['remadaBaixa',3,10,12],['elevacao',2,12,15],['triceps',2,10,15]];
+const MAY_INF_A = [['legpress',3,10,12],['agachTaca',3,10,12],['extensora',3,10,15],['abdutora',2,12,15],['panturrilha',3,12,15]];
+const MAY_INF_B = [['hipThrust',3,10,12],['stiff',3,10,12],['flexora',3,10,15],['abdutora',3,12,15],['pantEmPe',3,12,15]];
 
 /* Índice do plano: 0=domingo ... 6=sábado (Date.getDay) */
 const DEFAULT_PLANS = {
-  lua: { 1: D('Superiores A', SUP_A), 2: D('Inferiores A', INF_LUA), 3: REC, 4: D('Superiores B', SUP_B), 5: D('Inferiores B', INF_LUA), 6: REST, 0: REST },
-  may: { 1: D('Superiores A', SUP_A), 2: D('Inferiores A', INF_MAY), 3: REC, 4: D('Superiores B', SUP_B), 5: D('Inferiores B', INF_MAY), 6: REST, 0: REST }
+  lua: { 1: D('Superiores A · costas e braço', LUA_SUP_A), 2: D('Inferiores A · máquinas', LUA_INF_A), 3: REC, 4: D('Superiores B · ombro e braço', LUA_SUP_B), 5: D('Inferiores B · máquinas', LUA_INF_B), 6: REST, 0: REST },
+  may: { 1: D('Superiores A', MAY_SUP_A), 2: D('Inferiores A · quadríceps', MAY_INF_A), 3: REC, 4: D('Superiores B', MAY_SUP_B), 5: D('Inferiores B · glúteo e posterior', MAY_INF_B), 6: REST, 0: REST }
 };
+
+const OLD_LUA_V31 = { 2: D('Inferiores A · quadríceps', _LUA_INF_A31), 5: D('Inferiores B · posterior', _LUA_INF_B31) };
 
 const DEFAULT_PROFILES = {
   lua: { id: 'lua', name: 'Luã', age: 27, heightCm: 176, weightKg: 78, sex: 'M', focus: 'dorsais e ombros' },
@@ -451,8 +485,8 @@ const SHOP_SECTIONS = ['Hortifrúti','Proteínas','Laticínios','Mercearia','Pad
    NÚCLEO: utilitários, armazenamento, estado, roteador, UI comum
    ===================================================================== */
 'use strict';
-const APP_VERSION = '3.0.0';
-const SCHEMA = 2;               // versão do schema de dados (migrações abaixo)
+const APP_VERSION = '3.2.0';
+const SCHEMA = 4;               // versão do schema de dados (migrações abaixo)
 const PHASE = 3;        // fase do build (1, 2 ou 3)
 
 /* ---------- Utilitários ---------- */
@@ -544,6 +578,20 @@ const MIGRATIONS = {
       p.inc = p.inc || {};
       Store.set('profile:' + id, p);
     }
+  },
+  3: () => { // v3: novos treinos (inferiores A ≠ B; mais braço no Luã). Só troca dias que o usuário NÃO editou.
+    for (const id of Object.keys(DEFAULT_PROFILES)) {
+      const p = Store.get('profile:' + id); if (!p || !p.plan) continue;
+      for (const d of [1, 2, 4, 5]) {
+        if (JSON.stringify(p.plan[d]) === JSON.stringify(OLD_PLANS_V1[id][d])) p.plan[d] = clone(DEFAULT_PLANS[id][d]);
+      }
+      Store.set('profile:' + id, p);
+    }
+  },
+  4: () => { // v4: inferiores do Luã só em máquina. Só troca se o dia não foi editado.
+    const p = Store.get('profile:lua'); if (!p || !p.plan) return;
+    for (const d of [2, 5]) if (JSON.stringify(p.plan[d]) === JSON.stringify(OLD_LUA_V31[d])) p.plan[d] = clone(DEFAULT_PLANS.lua[d]);
+    Store.set('profile:lua', p);
   }
 };
 function runMigrations() {
